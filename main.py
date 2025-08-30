@@ -8,9 +8,13 @@ from bs4 import BeautifulSoup
 import aiohttp
 from telegram import Update, Bot, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
+from dotenv import load_dotenv
+
+# Загрузка переменных окружения из .env файла
+load_dotenv()
 
 # Настройки
-TOKEN = "8306606804:AAGseG45AV6ph-QYxb3D-fyNTdEeofO7gYc"
+TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')  # Изменено на загрузку из .env
 CHECK_INTERVAL_HOURS = 3  # Изменено на 3 часа
 TARGET_PRICE = 1400.0
 BASE_URL = "https://dns-shop.by"
@@ -585,6 +589,12 @@ async def scheduled_task():
             await asyncio.sleep(300)
 
 def main():
+    # Проверка наличия токена
+    if not TOKEN:
+        logger.error("TELEGRAM_BOT_TOKEN not found in environment variables")
+        logger.error("Please create .env file with TELEGRAM_BOT_TOKEN=your_token")
+        return
+    
     # Создаем Application
     application = Application.builder().token(TOKEN).build()
     
